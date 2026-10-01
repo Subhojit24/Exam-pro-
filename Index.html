@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ExamScore Pro</title>
+<style>
+:root{--bg:#eef3fb;--card:#fff;--ink:#1b1f3b;--mute:#5d6485;--line:#dfe5f3;--field:#f7f9fe;--pri:#5b4bdb;--cy:#06b6d4;--ok:#16a34a;--bad:#dc2626;--warn:#f59e0b;--sh:0 10px 30px rgba(52,60,120,.10);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1226;--card:#1a1e3a;--ink:#eef0ff;--mute:#a4abd0;--line:#2c3260;--field:#12152c;--sh:0 10px 30px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0f1226;--card:#1a1e3a;--ink:#eef0ff;--mute:#a4abd0;--line:#2c3260;--field:#12152c;--sh:0 10px 30px rgba(0,0,0,.35)}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;line-height:1.5}
+.hero{background:linear-gradient(120deg,#5b4bdb 0%,#3b82f6 55%,#06b6d4 100%);color:#fff;padding:44px 20px 96px;text-align:center}
+.brand{display:inline-flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:.95rem;background:rgba(255,255,255,.16);padding:8px 16px;border-radius:99px}
+.hero h1{margin:18px auto 8px;font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.1;max-width:18ch;font-weight:800}
+.hero p{margin:0 auto;max-width:48ch;opacity:.92;font-size:1.05rem}
+main{max-width:1120px;margin:-60px auto 40px;padding:0 16px;display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+.col{display:grid;gap:20px;min-width:0}
+.card{background:var(--card);border-radius:22px;padding:24px;box-shadow:var(--sh);border:1px solid var(--line);min-width:0}
+.card h2{margin:0 0 4px;font-size:1.2rem;display:flex;align-items:center;gap:10px}
+.card h2 svg{width:22px;height:22px;stroke:var(--pri);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sub{margin:0 0 18px;color:var(--mute);font-size:.92rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f.full{grid-column:1/-1}
+label{font-weight:600;font-size:.88rem}
+label small{font-weight:500;color:var(--mute)}
+input{font:inherit;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%;transition:border-color .15s,box-shadow .15s}
+input:hover{border-color:#aab3dd}
+input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px rgba(91,75,219,.18)}
+input[aria-invalid="true"]{border-color:var(--bad)}
+.err{color:var(--bad);font-size:.8rem;min-height:0}
+.time3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:12px 20px;cursor:pointer;transition:transform .12s,box-shadow .15s,background .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button:hover{transform:translateY(-2px)}
+button:active{transform:translateY(0)}
+button:focus-visible{outline:3px solid var(--cy);outline-offset:2px}
+.b-pri{background:linear-gradient(120deg,var(--pri),#3b82f6);color:#fff;box-shadow:0 8px 18px rgba(91,75,219,.35)}
+.b-ok{background:var(--ok);color:#fff}.b-warn{background:var(--warn);color:#2b1c00}.b-bad{background:var(--bad);color:#fff}
+.b-ghost{background:var(--field);color:var(--ink);border:1.5px solid var(--line)}
+.alert{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(220,38,38,.10);color:var(--bad);font-size:.9rem;font-weight:600}
+.alert.info{background:rgba(6,182,212,.12);color:#0e7490}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alert.info{color:#67e8f9}}
+.results{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
+.r{background:var(--field);border:1px solid var(--line);border-radius:16px;padding:14px;min-width:0}
+.r span{display:block;font-size:.8rem;color:var(--mute);font-weight:600}
+.r b{display:block;font-size:clamp(1.3rem,2.6vw,1.8rem);font-weight:800;margin-top:4px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.r.ok b{color:var(--ok)}.r.bad b{color:var(--bad)}.r.pri b{color:var(--pri)}.r.warn b{color:#d97706}
+.bar{margin-top:20px}
+.bar-top{display:flex;justify-content:space-between;font-weight:700;font-size:.9rem;margin-bottom:8px}
+.track{height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:99px;background:var(--mute);transition:width .6s cubic-bezier(.2,.8,.2,1),background .3s}
+.msg{margin:14px 0 0;font-weight:700;font-size:1.05rem;min-height:1.6em}
+.watch{font-size:clamp(2rem,5.5vw,2.9rem);font-weight:800;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.02em;padding:22px 8px;border-radius:18px;background:linear-gradient(120deg,rgba(91,75,219,.10),rgba(6,182,212,.12));margin-bottom:6px}
+.watch.run{color:var(--pri)}
+.tt{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hidden{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:960px){main{grid-template-columns:1fr}.results{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.grid{grid-template-columns:1fr}.card{padding:18px}.hero{padding-bottom:84px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="brand"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>EXAMSCORE PRO</div>
+  <h1>Know Your Score. Improve Your Accuracy.</h1>
+  <p>Calculate your marks, accuracy and test performance instantly.</p>
+</header>
+
+<main>
+  <div class="col">
+    <section class="card" aria-labelledby="t-h">
+      <h2 id="t-h"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>Test Details</h2>
+      <p class="sub">Enter your test details, then calculate.</p>
+      <div class="grid">
+        <div class="f"><label for="total">Total Questions</label><input id="total" type="number" inputmode="numeric" min="1" step="1" autocomplete="off"><div class="err" id="e-total"></div></div>
+        <div class="f"><label for="inc">Incorrect Questions</label><input id="inc" type="number" inputmode="numeric" min="0" step="1" autocomplete="off"><div class="err" id="e-inc"></div></div>
+        <div class="f"><label for="mpq">Marks per Question</label><input id="mpq" type="number" inputmode="decimal" min="0" step="any" autocomplete="off"><div class="err" id="e-mpq"></div></div>
+        <div class="f"><label for="neg">Negative Marking <small>(optional)</small></label><input id="neg" type="number" inputmode="decimal" min="0" step="any" autocomplete="off"><div class="err" id="e-neg"></div></div>
+        <div class="f full"><label id="tl">Time Taken <small>(optional)</small></label>
+          <div class="time3" role="group" aria-labelledby="tl">
+            <div><input id="h" type="number" inputmode="numeric" min="0" step="1" aria-label="Hours" placeholder="Hours" autocomplete="off"></div>
+            <div><input id="m" type="number" inputmode="numeric" min="0" step="1" aria-label="Minutes" placeholder="Minutes" autocomplete="off"></div>
+            <div><input id="s" type="number" inputmode="decimal" min="0" step="any" aria-label="Seconds" placeholder="Seconds" autocomplete="off"></div>
+          </div>
+          <div class="err" id="e-time"></div>
+        </div>
+      </div>
+      <div id="alert" class="alert hidden" role="alert"></div>
+      <div class="btns">
+        <button class="b-pri" id="calc" type="button">Calculate Result</button>
+        <button class="b-ghost" id="clear" type="button">Reset All</button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="r-h">
+      <h2 id="r-h"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Performance</h2>
+      <p class="sub">Your results appear here after you calculate.</p>
+      <div class="results" aria-live="polite">
+        <div class="r ok"><span>✅ Correct</span><b id="o-cor">—</b></div>
+        <div class="r bad"><span>❌ Incorrect</span><b id="o-inc">—</b></div>
+        <div class="r pri"><span>🎯 Accuracy</span><b id="o-acc">—</b></div>
+        <div class="r pri"><span>🏆 Your Marks</span><b id="o-marks">—</b></div>
+        <div class="r pri"><span>📈 Percentage</span><b id="o-pct">—</b></div>
+        <div class="r warn"><span>⏱ Average / Question</span><b id="o-avg">—</b></div>
+        <div class="r"><span>📝 Attempted</span><b id="o-att">—</b></div>
+        <div class="r"><span>💯 Maximum Marks</span><b id="o-max">—</b></div>
+      </div>
+      <div class="bar">
+        <div class="bar-top"><span>Accuracy</span><span id="bar-v">—</span></div>
+        <div class="track" role="progressbar" aria-label="Accuracy" aria-valuemin="0" aria-valuemax="100" id="pb"><div class="fill" id="fill"></div></div>
+        <p class="msg" id="msg"></p>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card" aria-labelledby="s-h">
+      <h2 id="s-h"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>Stopwatch</h2>
+      <p class="sub">Time your test, then apply it to the form.</p>
+      <div class="watch" id="watch" role="timer" aria-label="Stopwatch">00:00:00.00</div>
+      <div class="btns">
+        <button class="b-ok" id="start" type="button">Start</button>
+        <button class="b-warn hidden" id="pause" type="button">Pause</button>
+        <button class="b-ok hidden" id="resume" type="button">Resume</button>
+        <button class="b-pri hidden" id="apply" type="button">Stop &amp; Apply</button>
+        <button class="b-ghost" id="sw-reset" type="button">Reset</button>
+      </div>
+      <div class="alert info hidden" id="sw-note"></div>
+    </section>
+
+    <section class="card" aria-labelledby="tt-h">
+      <h2 id="tt-h"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time Taken</h2>
+      <p class="sub">Total time from the Hours, Minutes and Seconds fields.</p>
+      <div class="tt">
+        <div class="r pri"><span>Total time</span><b id="tt-hms">—</b></div>
+        <div class="r"><span>Total seconds</span><b id="tt-sec">—</b></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var ids=["total","inc","mpq","neg","h","m","s"];
+  var calculated=false;
+
+  function fmt(n){return String(Number(n.toFixed(2)))}
+  function pad(n,l){n=String(n);while(n.length<(l||2))n="0"+n;return n}
+  function read(id){
+    var v=$(id).value.trim();
+    if(v==="")return null;
+    var n=Number(v);
+    return isFinite(n)?n:NaN;
+  }
+  function fmtHMS(sec){
+    var t=Math.floor(sec),h=Math.floor(t/3600),m=Math.floor((t%3600)/60);
+    return pad(h)+":"+pad(m)+":"+pad(t%60);
+  }
+  function fmtAvg(sec){
+    if(sec<60)return fmt(sec)+"s";
+    var m=Math.floor(sec/60);
+    return m+"m "+fmt(sec-m*60)+"s";
+  }
+  function setErr(id,msg){
+    var e=$("e-"+id);e.textContent=msg||"";
+    if($(id))$(id).setAttribute("aria-invalid",msg?"true":"false");
+  }
+  function clearErrs(){
+    ["total","inc","mpq","neg"].forEach(function(k){setErr(k,"")});
+    $("e-time").textContent="";
+    ["h","m","s"].forEach(function(k){$(k).setAttribute("aria-invalid","false")});
+    $("alert").classList.add("hidden");
+  }
+
+  function totalSeconds(){
+    var h=read("h"),m=read("m"),s=read("s");
+    if([h,m,s].some(function(x){return x!==null&&(isNaN(x)||x<0)}))return NaN;
+    if(h===null&&m===null&&s===null)return null;
+    return (h||0)*3600+(m||0)*60+(s||0);
+  }
+
+  function updateTimeCard(){
+    var t=totalSeconds();
+    if(t===null||isNaN(t)){$("tt-hms").textContent="—";$("tt-sec").textContent="—";return}
+    $("tt-hms").textContent=fmtHMS(t);
+    $("tt-sec").textContent=fmt(t);
+  }
+
+  function resetResults(){
+    ["o-cor","o-inc","o-acc","o-marks","o-pct","o-avg","o-att","o-max"].forEach(function(i){$(i).textContent="—"});
+    $("bar-v").textContent="—";$("fill").style.width="0";$("fill").style.background="";
+    $("pb").removeAttribute("aria-valuenow");$("msg").textContent="";$("msg").style.color="";
+  }
+
+  function validate(){
+    var ok=true,t=read("total"),inc=read("inc"),mpq=read("mpq"),neg=read("neg");
+    function whole(k,v,label,min){
+      if(v===null){setErr(k,label+" is required.");ok=false;return}
+      if(isNaN(v)){setErr(k,"Enter a valid number.");ok=false;return}
+      if(v<0){setErr(k,"Negative numbers are not allowed.");ok=false;return}
+      if(Math.floor(v)!==v){setErr(k,"Enter a whole number.");ok=false;return}
+      if(min&&v<min){setErr(k,label+" must be greater than 0.");ok=false}
+    }
+    whole("total",t,"Total questions",1);
+    whole("inc",inc,"Incorrect questions",0);
+    if(ok&&inc>t){setErr("inc","Incorrect questions can't be more than total questions ("+t+").");ok=false}
+    if(mpq===null){setErr("mpq","Marks per question is required.");ok=false}
+    else if(isNaN(mpq)){setErr("mpq","Enter a valid number.");ok=false}
+    else if(mpq<0){setErr("mpq","Negative numbers are not allowed.");ok=false}
+    else if(mpq===0){setErr("mpq","Marks per question must be greater than 0.");ok=false}
+    if(neg!==null){
+      if(isNaN(neg)){setErr("neg","Enter a valid number or leave it empty.");ok=false}
+      else if(neg<0){setErr("neg","Enter negative marking as a positive value (e.g. 0.25).");ok=false}
+    }
+    var ts=totalSeconds();
+    if(isNaN(ts)){
+      $("e-time").textContent="Time must be a valid, non-negative number.";
+      ["h","m","s"].forEach(function(k){var v=read(k);if(v!==null&&(isNaN(v)||v<0))$(k).setAttribute("aria-invalid","true")});
+      ok=false;
+    }
+    return ok;
+  }
+
+  function calculate(){
+    clearErrs();
+    updateTimeCard();
+    if(!validate()){
+      resetResults();
+      var a=$("alert");a.textContent="Please fix the highlighted fields to see your result.";a.classList.remove("hidden");
+      calculated=false;
+      var bad=document.querySelector('input[aria-invalid="true"]');if(bad)bad.focus();
+      return false;
+    }
+    var t=read("total"),inc=read("inc"),mpq=read("mpq"),neg=read("neg")||0,ts=totalSeconds();
+    var cor=t-inc,acc=cor/t*100,max=t*mpq,marks=cor*mpq-inc*neg,pct=marks/max*100;
+    $("o-cor").textContent=cor;
+    $("o-inc").textContent=inc;
+    $("o-acc").textContent=fmt(acc)+"%";
+    $("o-marks").textContent=fmt(marks);
+    $("o-pct").textContent=fmt(pct)+"%";
+    $("o-att").textContent=cor+inc;
+    $("o-max").textContent=fmt(max);
+    $("o-avg").textContent=(ts!==null&&ts>0)?fmtAvg(ts/t):"—";
+    $("bar-v").textContent=fmt(acc)+"%";
+    $("fill").style.width=Math.max(0,Math.min(100,acc))+"%";
+    $("pb").setAttribute("aria-valuenow",fmt(acc));
+    var msg,col;
+    if(acc>=90){msg="Excellent accuracy!";col="#16a34a"}
+    else if(acc>=75){msg="Good accuracy — keep improving!";col="#06b6d4"}
+    else if(acc>=50){msg="Keep practicing!";col="#f59e0b"}
+    else{msg="Focus on accuracy first.";col="#dc2626"}
+    $("fill").style.background=col;
+    $("msg").textContent=msg;$("msg").style.color=col;
+    calculated=true;
+    return true;
+  }
+
+  $("calc").addEventListener("click",calculate);
+  ids.forEach(function(id){
+    $(id).addEventListener("input",function(){
+      updateTimeCard();
+      if(calculated)calculate();
+    });
+    $(id).addEventListener("keydown",function(e){if(e.key==="Enter")calculate()});
+  });
+
+  /* Stopwatch */
+  var elapsed=0,startTs=0,raf=0,state="idle";
+  function now(){return performance.now()}
+  function cur(){return state==="running"?elapsed+(now()-startTs):elapsed}
+  function showWatch(){
+    var ms=Math.floor(cur()),cs=Math.floor(ms/10)%100,t=Math.floor(ms/1000);
+    $("watch").textContent=pad(Math.floor(t/3600))+":"+pad(Math.floor(t/60)%60)+":"+pad(t%60)+"."+pad(cs);
+  }
+  function loop(){showWatch();if(state==="running")raf=requestAnimationFrame(loop)}
+  function ui(){
+    $("start").classList.toggle("hidden",state!=="idle"&&state!=="stopped");
+    $("pause").classList.toggle("hidden",state!=="running");
+    $("resume").classList.toggle("hidden",state!=="paused");
+    $("apply").classList.toggle("hidden",state!=="running"&&state!=="paused");
+    $("watch").classList.toggle("run",state==="running");
+  }
+  function note(msg){var n=$("sw-note");if(msg){n.textContent=msg;n.classList.remove("hidden")}else n.classList.add("hidden")}
+  $("start").addEventListener("click",function(){
+    elapsed=0;startTs=now();state="running";note("");ui();loop();
+  });
+  $("pause").addEventListener("click",function(){
+    elapsed+=now()-startTs;state="paused";cancelAnimationFrame(raf);showWatch();ui();
+  });
+  $("resume").addEventListener("click",function(){
+    startTs=now();state="running";ui();loop();
+  });
+  $("apply").addEventListener("click",function(){
+    if(state==="running")elapsed+=now()-startTs;
+    state="stopped";cancelAnimationFrame(raf);showWatch();ui();
+    var secs=elapsed/1000,h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=Math.round((secs-h*3600-m*60)*100)/100;
+    $("h").value=h;$("m").value=m;$("s").value=s;
+    updateTimeCard();
+    var t=read("total"),inc=read("inc"),mpq=read("mpq");
+    if(t===null||inc===null||mpq===null){
+      calculated=false;
+      note("Time applied: "+fmtHMS(secs)+". Fill in the test details and press Calculate Result.");
+    }else{
+      note("");
+      calculate();
+    }
+  });
+  $("sw-reset").addEventListener("click",function(){
+    cancelAnimationFrame(raf);elapsed=0;state="idle";showWatch();ui();note("");
+  });
+
+  /* Reset everything */
+  $("clear").addEventListener("click",function(){
+    ids.forEach(function(id){$(id).value=""});
+    clearErrs();resetResults();updateTimeCard();calculated=false;
+    cancelAnimationFrame(raf);elapsed=0;state="idle";showWatch();ui();note("");
+    $("total").focus();
+  });
+  ui();
+})();
+</script>
+</body>
+</html>
